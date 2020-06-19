@@ -1,9 +1,9 @@
 {
-  "name": "jitsi-meet-electron",
+  "name": "jitsi-meet-electron-datcom",
   "version": "2.2.0",
-  "description": "Electron application for Jitsi Meet",
+  "description": "Electron application for Jitsi Meet, branded by DatCom",
   "main": "./build/main.js",
-  "productName": "Jitsi Meet",
+  "productName": "DatCom Jitsi Meet",
   "scripts": {
     "start": "webpack --config ./webpack.main.js --mode development && concurrently \"npm:watch\" \"electron ./build/main.js\"",
     "clean": "rm -rf node_modules build dist",
@@ -16,8 +16,8 @@
     "watch": "webpack --config ./webpack.renderer.js --mode development --watch --watch-poll"
   },
   "build": {
-    "appId": "org.jitsi.jitsi-meet",
-    "productName": "Jitsi Meet",
+    "appId": "org.unibw.datcom.jitsi-meet",
+    "productName": "DatCom Jitsi Meet",
     "generateUpdatesFilesForAllChannels": true,
     "files": [
       "**/*",
