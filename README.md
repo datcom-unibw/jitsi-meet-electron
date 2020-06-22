@@ -1,6 +1,35 @@
-# Jitsi Meet Electron
+# DatCom Jitsi Meet Electron
 
 Desktop application for [Jitsi Meet] built with [Electron].
+
+This is a branded version of the *Jitsi Meet Electron* software by the *Privacy and Compliance* group at *Universität der Bundeswehr München*.  
+https://github.com/datcom-unibw/jitsi-meet
+
+If you are not looking for this specific version, you are probably looking for the original software, available here:  
+https://github.com/jitsi/jitsi-meet
+
+## Branding
+
+- Change the default server to https://meet2.datcom-unibw.de (Server requires login)
+- Change the color scheme
+- Change program identifier strings and URLs to avoid interference with the original application
+
+## Quick Install
+
+### Windows
+
+Download and run the "jitsi-meet.exe" from the latest release.
+
+### Linux
+
+Download and run the "jitsi-meet-x86_64.AppImage".
+
+The additional command line parameter "--no-sandbox" can be necessary in some cases.
+
+### MacOS
+
+Currently not available.
+
 
 ![](screenshot.png)
 
@@ -36,13 +65,6 @@ sudo apt-get install libnss3
 
 </details>
 
-### Homebrew
-
-For *MacOS* user, you can install the application using the following command:
-
-```
-brew cask install jitsi-meet
-```
 
 ### Using it with your own Jitsi Meet installation
 
