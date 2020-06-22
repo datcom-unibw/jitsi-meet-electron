@@ -288,7 +288,7 @@ class Welcome extends Component<Props, State> {
                                 type = 'text'
                                 value = { this.state.url } />
                             <Button
-                                appearance = 'primary'
+                                appearance = 'default'
                                 onClick = { this._onJoin }
                                 type = 'button'>
                                 GO
