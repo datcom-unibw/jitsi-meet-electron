@@ -1,0 +1,14 @@
+diff --git a/node_modules/electron-updater/out/windowsExecutableCodeSignatureVerifier.js b/node_modules/electron-updater/out/windowsExecutableCodeSignatureVerifier.js
+index 4125a36..1f903da 100644
+--- a/node_modules/electron-updater/out/windowsExecutableCodeSignatureVerifier.js
++++ b/node_modules/electron-updater/out/windowsExecutableCodeSignatureVerifier.js
+@@ -46,7 +46,8 @@ function verifySignature(publisherNames, tempUpdateFile, logger) {
+   return new Promise(resolve => {
+     // https://github.com/electron-userland/electron-builder/issues/2421
+     // https://github.com/electron-userland/electron-builder/issues/2535
+-    (0, _child_process().execFile)("powershell.exe", ["-NoProfile", "-NonInteractive", "-InputFormat", "None", "-Command", `Get-AuthenticodeSignature '${tempUpdateFile}' | ConvertTo-Json -Compress`], {
++	// https://github.com/electron-userland/electron-builder/issues/5088
++    (0, _child_process().execFile)("powershell.exe", ["-NoProfile", "-NonInteractive", "-InputFormat", "None", "-Command",  `$OutputEncoding = [console]::InputEncoding = [console]::OutputEncoding = New-Object System.Text.UTF8Encoding; Get-AuthenticodeSignature '${tempUpdateFile}' | ConvertTo-Json -Compress`], {
+       timeout: 20 * 1000
+     }, (error, stdout, stderr) => {
+       try {
