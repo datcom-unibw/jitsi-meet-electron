@@ -1,9 +1,9 @@
 {
-  "name": "jitsi-meet-electron-datcom",
+  "name": "datcom-meet-electron",
   "version": "2.2.100",
   "description": "Electron application for Jitsi Meet, branded by DatCom",
   "main": "./build/main.js",
-  "productName": "DatCom Jitsi Meet",
+  "productName": "DatCom Meet",
   "scripts": {
     "start": "webpack --config ./webpack.main.js --mode development && concurrently \"npm:watch\" \"electron ./build/main.js\"",
     "clean": "rm -rf node_modules build dist",
@@ -16,8 +16,8 @@
     "watch": "webpack --config ./webpack.renderer.js --mode development --watch --watch-poll"
   },
   "build": {
-    "appId": "org.unibw.datcom.jitsi-meet",
-    "productName": "DatCom Jitsi Meet",
+    "appId": "org.unibw.datcom.datcom-meet",
+    "productName": "DatCom Meet",
     "generateUpdatesFilesForAllChannels": true,
     "files": [
       "**/*",
@@ -26,22 +26,22 @@
       "!main.js"
     ],
     "mac": {
-      "artifactName": "jitsi-meet.${ext}",
+      "artifactName": "datcom-meet.${ext}",
       "category": "public.app-category.video",
       "darkModeSupport": true,
       "hardenedRuntime": true,
       "entitlements": "entitlements.mac.plist",
       "entitlementsInherit": "entitlements.mac.plist",
       "extendInfo": {
-        "NSCameraUsageDescription": "Jitsi Meet requires access to your camera in order to make video-calls.",
-        "NSMicrophoneUsageDescription": "Jitsi Meet requires access to your microphone in order to make calls (audio/video)."
+        "NSCameraUsageDescription": "DatCom Meet requires access to your camera in order to make video-calls.",
+        "NSMicrophoneUsageDescription": "DatCom Meet requires access to your microphone in order to make calls (audio/video)."
       }
     },
     "linux": {
-      "artifactName": "jitsi-meet-${arch}.${ext}",
+      "artifactName": "datcom-meet-${arch}.${ext}",
       "category": "VideoConference;AudioVideo;Audio;Video;Network",
-      "description": "Jitsi Meet Desktop App",
-      "executableName": "jitsi-meet",
+      "description": "DatCom Meet Desktop App",
+      "executableName": "datcom-meet",
       "target": [
         {
           "arch": "x64",
@@ -50,7 +50,7 @@
       ]
     },
     "win": {
-      "artifactName": "jitsi-meet.${ext}",
+      "artifactName": "datcom-meet.${ext}",
       "target": [
         {
           "arch": [
@@ -77,9 +77,9 @@
     "webrtc",
     "xmpp",
     "electron",
-    "jitsi-meet"
+    "datcom-meet"
   ],
-  "author": "Jitsi Team <support@jitsi.org>",
+  "author": "DatCom <feedback@datcom-unibw.de>",
   "readmeFilename": "README.md",
   "license": "Apache-2.0",
   "dependencies": {
