@@ -1,12 +1,12 @@
-# DatCom Jitsi Meet Electron
+# DatCom Meet Electron
 
 Desktop application for [Jitsi Meet] built with [Electron].
 
 This is a branded version of the *Jitsi Meet Electron* software by the *Privacy and Compliance* group at *Universität der Bundeswehr München*.  
-https://github.com/datcom-unibw/jitsi-meet
+https://github.com/datcom-unibw/jitsi-meet-electron
 
 If you are not looking for this specific version, you are probably looking for the original software, available here:  
-https://github.com/jitsi/jitsi-meet
+https://github.com/jitsi/jitsi-meet-electron
 
 ## Branding
 
@@ -18,11 +18,11 @@ https://github.com/jitsi/jitsi-meet
 
 ### Windows
 
-Download and run the "jitsi-meet.exe" from the latest release.
+Download and run the "datcom-meet.exe" from the latest release.
 
 ### Linux
 
-Download and run the "jitsi-meet-x86_64.AppImage".
+Download and run the "datcom-meet-x86_64.AppImage".
 
 The additional command line parameter "--no-sandbox" can be necessary in some cases.
 
@@ -156,7 +156,7 @@ please join [community forum].
 
 [Jitsi Meet]: https://github.com/jitsi/jitsi-meet
 [Electron]: https://electronjs.org/
-[latest release]: https://github.com/jitsi/jitsi-meet-electron/releases/latest
+[latest release]: https://github.com/datcom-unibw/jitsi-meet-electron/releases/latest
 [jitsi-meet-electron-utils]: https://github.com/jitsi/jitsi-meet-electron-utils
 [jitsi-meet-electron-utils README]: https://github.com/jitsi/jitsi-meet-electron-utils/blob/master/README.md
 [community forum]: https://community.jitsi.org/
