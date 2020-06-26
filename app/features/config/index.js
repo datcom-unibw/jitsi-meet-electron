@@ -13,7 +13,7 @@ export default {
     /**
      * Application name.
      */
-    appName: 'DatCom Jitsi Meet',
+    appName: 'DatCom Meet',
 
     /**
      * The default server URL of Jitsi Meet Deployment that will be used.
