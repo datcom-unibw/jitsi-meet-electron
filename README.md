@@ -18,18 +18,17 @@ https://github.com/jitsi/jitsi-meet-electron
 
 ### Windows
 
-Download and run the "datcom-meet.exe" from the latest release.
+[Download](https://github.com/datcom-unibw/jitsi-meet-electron/releases/latest/download/datcom-meet.exe) and run "datcom-meet.exe".
+
+### macOS
+
+[Download](https://github.com/datcom-unibw/jitsi-meet-electron/releases/latest/download/datcom-meet.dmg) and install "datcom-meet.dmg".
 
 ### Linux
 
-Download and run the "datcom-meet-x86_64.AppImage".
+[Download](https://github.com/datcom-unibw/jitsi-meet-electron/releases/latest/download/datcom-meet-x86_64.AppImage) and run "datcom-meet-x86_64.AppImage".
 
 The additional command line parameter "--no-sandbox" can be necessary in some cases.
-
-### MacOS
-
-Currently not available.
-
 
 ![](screenshot.png)
 
@@ -93,6 +92,13 @@ If you want to hack on this project, here is how you do it.
 
 <details><summary>Show building instructions</summary>
 
+
+Building the application requires *node-js* and *python* on all platforms.
+
+Building on Windows additionally requires the C++ component of *Microsoft Visual Studio*.
+The *Community Edition* is sufficient.
+
+
 #### Installing dependencies
 
 ```bash
@@ -112,6 +118,13 @@ The debugger tools are available when running in dev mode and can be activated w
 ```bash
 npm run dist
 ```
+
+Full command line for building the production distribution from scratch:
+
+```bash
+npm run clean && npm install jitsi-meet-electron-utils --force && npm install && npm run dist
+```
+
 
 #### Working with jitsi-meet-electron-utils
 
