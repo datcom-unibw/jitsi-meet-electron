@@ -20,9 +20,13 @@ https://github.com/jitsi/jitsi-meet-electron
 
 [Download](https://github.com/datcom-unibw/jitsi-meet-electron/releases/latest/download/datcom-meet.exe) and run "datcom-meet.exe".
 
+The installer is signed by *Universität der Bundeswehr München*.
+
 ### macOS
 
 [Download](https://github.com/datcom-unibw/jitsi-meet-electron/releases/latest/download/datcom-meet.dmg) and install "datcom-meet.dmg".
+
+The Apple Disk Image is not signed. Running the application must be enabled in the *macOS* privacy settings.
 
 ### Linux
 
@@ -93,16 +97,29 @@ If you want to hack on this project, here is how you do it.
 <details><summary>Show building instructions</summary>
 
 
-Building the application requires *node-js* and *python* on all platforms.
+Building the application requires *git*, *node-js* and *python* on all platforms.
 
-Building on Windows additionally requires the C++ component of *Microsoft Visual Studio*.
+Building on Windows additionally requires the C++ component of [*Microsoft Visual Studio*](https://visualstudio.microsoft.com/).
 The *Community Edition* is sufficient.
 
+#### Building the production distribution
 
-#### Installing dependencies
+Clone the git repositoy into a local directory:
 
 ```bash
-npm install
+git clone https://github.com/datcom-unibw/jitsi-meet-electron.git
+```
+
+Change into the newly created directory:
+
+```bash
+cd jitsi-meet-electron
+```
+
+Full command line for building the production distribution from scratch:
+
+```bash
+npm run clean && npm install jitsi-meet-electron-utils --force && npm install && npm run dist
 ```
 
 #### Starting in development mode
@@ -112,19 +129,6 @@ npm start
 ```
 
 The debugger tools are available when running in dev mode and can be activated with keyboard shortcuts as defined here https://github.com/sindresorhus/electron-debug#features.
-
-#### Building the production distribution
-
-```bash
-npm run dist
-```
-
-Full command line for building the production distribution from scratch:
-
-```bash
-npm run clean && npm install jitsi-meet-electron-utils --force && npm install && npm run dist
-```
-
 
 #### Working with jitsi-meet-electron-utils
 
