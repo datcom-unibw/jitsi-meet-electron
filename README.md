@@ -40,34 +40,14 @@ The additional command line parameter "--no-sandbox" can be necessary in some ca
 
 - [End-to-End Encryption](https://jitsi.org/blog/e2ee/) support (BETA)
 - Works with any Jitsi Meet deployment
-- Local settings
 - Builtin auto-updates
 - Remote control
 - Always-On-Top window
+- Support for deeplinks such as `jitsi-meet://myroom` (will open `myroom` on the configured Jitsi instance) or `jitsi-meet://jitsi.mycompany.com/myroom` (will open `myroom` on the Jitsi instance running on `jitsi.mycompany.com`)
 
 ## Installation
 
-Download our [latest release] and you're off to the races! The supported platforms
-are macOS, Windows (both 32 and 64bits) and GNU/Linux (64bits only).
-
-<details><summary>NOTE for old GNU/Linux distributions</summary>
-
-You might get the following error:
-
-```
-FATAL:nss_util.cc(632)] NSS_VersionCheck("3.26") failed. NSS >= 3.26 is required.
-Please upgrade to the latest NSS, and if you still get this error, contact your
-distribution maintainer.
-```
-
-If you do, please install NSS (example for Debian / Ubuntu):
-
-```bash
-sudo apt-get install libnss3
-```
-
-</details>
-
+Download our latest release and you're off to the races!
 
 ### Using it with your own Jitsi Meet installation
 
@@ -96,13 +76,14 @@ If you want to hack on this project, here is how you do it.
 
 <details><summary>Show building instructions</summary>
 
+#### Installing dependencies
 
 Building the application requires *git*, *node-js* and *python* on all platforms.
 
 Building on Windows additionally requires the C++ component of [*Microsoft Visual Studio*](https://visualstudio.microsoft.com/).
 The *Community Edition* is sufficient.
 
-#### Building the production distribution
+Install Node.js 12 first (or if you use [nvm](https://github.com/nvm-sh/nvm), switch to Node.js 12 by running `nvm use`).
 
 Clone the git repositoy into a local directory:
 
@@ -116,10 +97,8 @@ Change into the newly created directory:
 cd jitsi-meet-electron
 ```
 
-Full command line for building the production distribution from scratch:
-
 ```bash
-npm run clean && npm install jitsi-meet-electron-utils --force && npm install && npm run dist
+npm install
 ```
 
 #### Starting in development mode
@@ -129,6 +108,22 @@ npm start
 ```
 
 The debugger tools are available when running in dev mode and can be activated with keyboard shortcuts as defined here https://github.com/sindresorhus/electron-debug#features.
+
+It can also be displayed automatically from the `SHOW_DEV_TOOLS` environment variable such as:
+
+```bash
+SHOW_DEV_TOOLS=true npm start
+```
+
+or from the application `--show-dev-tools` command line flag.
+
+#### Building the production distribution
+
+Full command line for building the production distribution from scratch:
+
+```bash
+npm run clean && npm install jitsi-meet-electron-utils --force && npm install && npm run dist
+```
 
 #### Working with jitsi-meet-electron-utils
 
@@ -159,6 +154,42 @@ npm install jitsi-meet-electron-utils --force
 
 NOTE: Also check the [jitsi-meet-electron-utils README] to see how to configure
 your environment.
+
+</details>
+
+## Known issues
+
+### Windows
+
+None.
+
+### macOS
+
+On macOS Catalina a warning will be displayed on first install. The app won't open unless "open" is pressed. This dialog is only shown once.
+
+### GNU/Linux
+
+There is a known issue which prevents the app from starting on some Linux distributions: #231
+
+If after downloading it, you can't execute the file directly, try running `chmod u+x ./jitsi-meet-x86_64.AppImage.AppImage`
+
+The workaround for now is to launch the app like so: `./jitsi-meet-x86_64.AppImage --no-sandbox`
+
+<details><summary>NOTE for old GNU/Linux distributions</summary>
+
+You might get the following error:
+
+```
+FATAL:nss_util.cc(632)] NSS_VersionCheck("3.26") failed. NSS >= 3.26 is required.
+Please upgrade to the latest NSS, and if you still get this error, contact your
+distribution maintainer.
+```
+
+If you do, please install NSS (example for Debian / Ubuntu):
+
+```bash
+sudo apt-get install libnss3
+```
 
 </details>
 
