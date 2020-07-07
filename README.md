@@ -80,7 +80,7 @@ If you want to hack on this project, here is how you do it.
 
 Building the application requires *git*, *node-js* and *python* on all platforms.
 
-Building on Windows additionally requires the C++ component of [*Microsoft Visual Studio*](https://visualstudio.microsoft.com/).
+Building on Windows additionally requires the C++ component of [*Visual Studio*](https://visualstudio.microsoft.com/).
 The *Community Edition* is sufficient.
 
 Install Node.js 12 first (or if you use [nvm](https://github.com/nvm-sh/nvm), switch to Node.js 12 by running `nvm use`).
@@ -99,6 +99,7 @@ cd jitsi-meet-electron
 
 ```bash
 npm install
+npm install jitsi-meet-electron-utils --force
 ```
 
 #### Starting in development mode
