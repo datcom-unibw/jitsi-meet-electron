@@ -1,6 +1,5 @@
 // @flow
 
-import Button from '@atlaskit/button';
 import { FieldTextStateless } from '@atlaskit/field-text';
 import { SpotlightTarget } from '@atlaskit/onboarding';
 import Page from '@atlaskit/page';
@@ -19,7 +18,7 @@ import { Onboarding, startOnboarding } from '../../onboarding';
 import { RecentList } from '../../recent-list';
 import { createConferenceObjectFromURL } from '../../utils';
 
-import { Body, FieldWrapper, Form, Header, Label, Wrapper } from '../styled';
+import { Body, FieldWrapper, Form, Header, Label, Wrapper, CustomButton } from '../styled';
 
 type Props = {
 
@@ -275,12 +274,10 @@ class Welcome extends Component<Props, State> {
                                 shouldFitContainer = { true }
                                 type = 'text'
                                 value = { this.state.url } />
-                            <Button
-                                appearance = 'default'
-                                onClick = { this._onJoin }
-                                type = 'button'>
+                            <CustomButton
+                                onClick = { this._onJoin }>
                                 { t('go') }
-                            </Button>
+                            </CustomButton>
                         </FieldWrapper>
                     </Form>
                 </SpotlightTarget>
