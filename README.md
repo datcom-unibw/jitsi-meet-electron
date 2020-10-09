@@ -41,7 +41,7 @@ The additional command line parameter "--no-sandbox" can be necessary in some ca
 - [End-to-End Encryption](https://jitsi.org/blog/e2ee/) support (BETA)
 - Works with any Jitsi Meet deployment
 - Builtin auto-updates
-- Remote control
+- ~Remote control~ (currently disabled)
 - Always-On-Top window
 - Support for deeplinks such as `jitsi-meet://myroom` (will open `myroom` on the configured Jitsi instance) or `jitsi-meet://jitsi.mycompany.com/myroom` (will open `myroom` on the Jitsi instance running on `jitsi.mycompany.com`)
 
@@ -50,18 +50,6 @@ The additional command line parameter "--no-sandbox" can be necessary in some ca
 Download our latest release and you're off to the races!
 
 ### Using it with your own Jitsi Meet installation
-
-In order to use this application with your own Jitsi Meet installation it's
-necessary to enable the External API. Your server must serve a `external_api.js`
-file at the root of the installation.
-
-Here is an example using nginx:
-
-```
-location /external_api.js {
-    alias /usr/share/jitsi-meet/libs/external_api.min.js;
-}
-```
 
 :warning: The following additional HTTP headers are known to break the Electron App:
 
@@ -173,7 +161,7 @@ Builtin auto-updates are not yet handled in macOS due to unsigned build.
 
 There is a known issue which prevents the app from starting on some Linux distributions: #231
 
-If after downloading it, you can't execute the file directly, try running `chmod u+x ./jitsi-meet-x86_64.AppImage.AppImage`
+If after downloading it, you can't execute the file directly, try running `chmod u+x ./jitsi-meet-x86_64.AppImage`
 
 The workaround for now is to launch the app like so: `./jitsi-meet-x86_64.AppImage --no-sandbox`
 

@@ -190,7 +190,8 @@ function createJitsiMeetWindow() {
         minHeight: 600,
         show: false,
         webPreferences: {
-            experimentalFeatures: true, // Insertable streams, for E2EE.
+            enableBlinkFeatures: 'RTCInsertableStreams',
+            enableRemoteModule: true,
             nativeWindowOpen: true,
             nodeIntegration: false,
             preload: path.resolve(basePath, './build/preload.js')
