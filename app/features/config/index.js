@@ -24,7 +24,7 @@ export default {
     /**
      * The default server URL of Jitsi Meet Deployment that will be used.
      */
-    defaultServerURL: 'https://meet2.datcom-unibw.de',
+    defaultServerURL: 'https://meet.datcom-unibw.de',
 
     /**
      * The default server Timeout in seconds.
