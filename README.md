@@ -10,7 +10,7 @@ https://github.com/jitsi/jitsi-meet-electron
 
 ## Branding
 
-- Change the default server to https://meet2.datcom-unibw.de (Server requires login)
+- Change the default server to https://meet.datcom-unibw.de (Server requires login)
 - Change the color scheme
 - Change program identifier strings and URLs to avoid interference with the original application
 
