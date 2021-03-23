@@ -39,10 +39,10 @@ export default {
     /**
      * The URL of Privacy Policy Page.
      */
-    privacyPolicyURL: 'https://meet2.datcom-unibw.de/privacy.html',
+    privacyPolicyURL: 'https://meet.datcom-unibw.de/privacy.html',
 
     /**
      * The URL of Terms and Conditions Page.
      */
-    termsAndConditionsURL: 'https://meet2.datcom-unibw.de/terms.html'
+    termsAndConditionsURL: 'https://meet.datcom-unibw.de/terms.html'
 };
