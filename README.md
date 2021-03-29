@@ -30,7 +30,9 @@ The Apple Disk Image is not signed. Running the application must be enabled in t
 
 ### Linux
 
-[Download](https://github.com/datcom-unibw/jitsi-meet-electron/releases/latest/download/datcom-meet-x86_64.AppImage) and run "datcom-meet-x86_64.AppImage".
+[Download](https://github.com/datcom-unibw/jitsi-meet-electron/releases/latest/download/datcom-meet-x86_64.AppImage) and run "datcom-meet-x86_64.AppImage",
+
+or [download](https://github.com/datcom-unibw/jitsi-meet-electron/releases/latest/download/datcom-meet-amd64.deb) and install the Debian package "datcom-meet-amd64.deb".
 
 The additional command line parameter "--no-sandbox" can be necessary in some cases.
 
