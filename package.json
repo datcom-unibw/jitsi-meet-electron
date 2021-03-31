@@ -20,6 +20,7 @@
     "appId": "org.unibw.datcom.datcom-meet",
     "productName": "DatCom Meet",
     "generateUpdatesFilesForAllChannels": true,
+    "afterPack": "./linux-sandbox-fix.js",
     "files": [
       "**/*",
       "resources",
