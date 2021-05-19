@@ -34,6 +34,12 @@ app.commandLine.appendSwitch('disable-site-isolation-trials');
 // https://github.com/electron/electron/issues/19880
 app.commandLine.appendSwitch('disable-features', 'IOSurfaceCapturer');
 
+// Enable Opus RED field trial.
+app.commandLine.appendSwitch('force-fieldtrials', 'WebRTC-Audio-Red-For-Opus/Enabled/');
+
+// Enable optional PipeWire support.
+app.commandLine.appendSwitch('enable-features', 'WebRTCPipeWireCapturer');
+
 // Needed until robot.js is fixed: https://github.com/octalmage/robotjs/issues/580
 app.allowRendererProcessReuse = false;
 
