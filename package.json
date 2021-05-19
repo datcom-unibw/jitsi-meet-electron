@@ -1,6 +1,6 @@
 {
   "name": "datcom-meet-electron",
-  "version": "2.8.500",
+  "version": "2.8.700",
   "description": "Electron application for Jitsi Meet, branded by DatCom",
   "main": "./build/main.js",
   "productName": "DatCom Meet",
