@@ -44,5 +44,10 @@ export default {
     /**
      * The URL of Terms and Conditions Page.
      */
-    termsAndConditionsURL: 'https://meet.datcom-unibw.de/terms.html'
+    termsAndConditionsURL: 'https://meet.datcom-unibw.de/terms.html',
+
+    /**
+     * The URL of the german DatCom Meet help.
+     */
+    deHelpURL: 'https://meet.datcom-unibw.de/datcom_jitsi-meet_nutzeranleitung.pdf'
 };

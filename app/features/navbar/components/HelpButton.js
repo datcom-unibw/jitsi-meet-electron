@@ -44,6 +44,9 @@ class HelpButton extends Component<*, State> {
             = openExternalLink.bind(undefined, config.termsAndConditionsURL);
         this._onSendFeedbackClick
             = openExternalLink.bind(undefined, config.feedbackURL);
+        this._onDeHelpClick
+            = openExternalLink.bind(undefined, config.deHelpURL);
+
     }
 
     _onAboutClick: (*) => void;
@@ -82,6 +85,8 @@ class HelpButton extends Component<*, State> {
 
     _onSendFeedbackClick: (*) => void;
 
+    _onDeHelpClick: (*) => void;
+
     /**
      * Render function of component.
      *
@@ -89,6 +94,7 @@ class HelpButton extends Component<*, State> {
      */
     render() {
         const { t } = this.props;
+        const { i18n } = this.props;
 
         return (
             <Droplist
@@ -112,6 +118,11 @@ class HelpButton extends Component<*, State> {
                     </Item>
                     <Item onActivate = { this._onSourceClick }>
                         { t('sourceLink') }
+                    </Item>
+                    <Item
+                        isHidden = { i18n.language !== 'de' }
+                        onActivate = { this._onDeHelpClick }>
+                        { 'Anleitung' }
                     </Item>
                     <Item>
                         { t('versionLabel', { version }) }
