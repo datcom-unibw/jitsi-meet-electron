@@ -77,7 +77,7 @@ Building the application requires *git*, *node-js* and *python* on all platforms
 Building on Windows additionally requires the C++ component of [*Visual Studio*](https://visualstudio.microsoft.com/).
 The *Community Edition* is sufficient.
 
-Install Node.js 14 first (or if you use [nvm](https://github.com/nvm-sh/nvm), switch to Node.js 14 by running `nvm use`).
+Install Node.js 16 first (or if you use [nvm](https://github.com/nvm-sh/nvm), switch to Node.js 14 by running `nvm use`).
 
 Clone the git repositoy into a local directory:
 
@@ -95,7 +95,6 @@ cd jitsi-meet-electron
 
 ```bash
 npm install --global --production windows-build-tools
-npm config set msvs_version 2017
 ```
 </details>
 
@@ -112,7 +111,6 @@ Install all required packages:
 
 ```bash
 npm install
-npm install jitsi-meet-electron-utils --force
 ```
 
 #### Starting in development mode
@@ -136,38 +134,49 @@ or from the application `--show-dev-tools` command line flag.
 Full command line for building the production distribution from scratch:
 
 ```bash
-npm run clean && npm install jitsi-meet-electron-utils --force && npm install && npm run dist
+npm run clean && npm install && npm run dist
 ```
 
-#### Working with jitsi-meet-electron-utils
+#### Working with jitsi-meet-electron-sdk
 
-[jitsi-meet-electron-utils] is a helper package which implements many features
+[jitsi-meet-electron-sdk] is a helper package which implements many features
 such as remote control and the always-on-top window. If new features are to be
 added / tested, running with a local version of these utils is very handy, here
 is how to do that.
 
-By default the jitsi-meet-electron-utils is build from its git repository
-sources. The default dependency path in package.json is:
+By default the @jitsi/electron-sdk is build from npm. The default dependency path in package.json is:
 
 ```json
-"jitsi-meet-electron-utils": "jitsi/jitsi-meet-electron-utils"
+"@jitsi/electron-sdk": "^3.0.0"
 ```
 
 To work with local copy you must change the path to:
 
 ```json
-"jitsi-meet-electron-utils": "file:///Users/name/jitsi-meet-electron-utils-copy",
+"@jitsi/electron-sdk": "file:///Users/name/jitsi-meet-electron-sdk-copy",
 ```
 
 To build the project you must force it to take the sources as `npm update` will
 not do it.
 
 ```bash
-npm install jitsi-meet-electron-utils --force
+npm install @jitsi/electron-sdk --force
 ```
 
-NOTE: Also check the [jitsi-meet-electron-utils README] to see how to configure
+NOTE: Also check the [jitsi-meet-electron-sdk README] to see how to configure
 your environment.
+
+#### Publishing
+
+1. Create release branch: `git checkout -b release-1-2-3`, replacing 1-2-3 with the desired release version
+2. Increment the version: `npm version patch`, replacing `patch` with `minor` or `major` as required
+3. Push release branch to github: `git push -u origin release-1-2-3`
+4. Create PR: `gh pr create`
+5. Once PR is reviewed and ready to merge, create draft Github release: `gh release create v1.2.3 --draft --title 1.2.3`, replacing v1.2.3 and 1.2.3 with the desired release version
+6. Merge PR
+7. Github action will build binaries and attach to the draft release
+8. Test binaries from draft release
+9. If all tests are fine, publish draft release
 
 </details>
 
@@ -180,7 +189,6 @@ None.
 ### macOS
 
 On macOS Catalina a warning will be displayed on first install. The app won't open unless "open" is pressed. This dialog is only shown once.
-Builtin auto-updates are not yet handled in macOS due to unsigned build.
 
 ### GNU/Linux
 
@@ -225,7 +233,7 @@ please join [community forum].
 [Jitsi Meet]: https://github.com/jitsi/jitsi-meet
 [Electron]: https://electronjs.org/
 [latest release]: https://github.com/datcom-unibw/jitsi-meet-electron/releases/latest
-[jitsi-meet-electron-utils]: https://github.com/jitsi/jitsi-meet-electron-utils
-[jitsi-meet-electron-utils README]: https://github.com/jitsi/jitsi-meet-electron-utils/blob/master/README.md
+[jitsi-meet-electron-sdk]: https://github.com/jitsi/jitsi-meet-electron-sdk
+[jitsi-meet-electron-sdk README]: https://github.com/jitsi/jitsi-meet-electron-sdk/blob/master/README.md
 [community forum]: https://community.jitsi.org/
 [LICENSE]: LICENSE
