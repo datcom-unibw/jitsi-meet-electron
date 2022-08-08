@@ -15,17 +15,17 @@ jobs:
     name: Linux
     runs-on: ubuntu-20.04
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
       with:
         node-version: '16'
     - name: Build it
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        npm install
+        npm ci
         npm run dist
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3.1.0
       with:
         name: linux-binaries
         path: |
@@ -36,12 +36,14 @@ jobs:
     name: macOS
     runs-on: macos-11
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
       with:
         node-version: '16'
     - name: Prepare for app signing and notarization
-      if: ${{ github.event_name != 'pull_request' }}
+      env:
+        MAC_CERT_PASSWORD: ${{ secrets.mac_cert_password }}
+      if: ${{ env.MAC_CERT_PASSWORD }}
       run: |
         echo "CSC_LINK=${{ secrets.mac_cert }}" >> $GITHUB_ENV
         echo "CSC_KEY_PASSWORD=${{ secrets.mac_cert_password }}" >> $GITHUB_ENV
@@ -52,10 +54,10 @@ jobs:
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        npm install
+        npm ci
         npm run lint
         npm run dist
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3.1.0
       with:
         name: mac-binaries
         path: |
@@ -64,19 +66,19 @@ jobs:
           dist/latest-mac.yml
   build-windows:
     name: Windows
-    runs-on: windows-2019
+    runs-on: windows-2022
     steps:
-    - uses: actions/checkout@v2
-    - uses: actions/setup-node@v2
+    - uses: actions/checkout@v3
+    - uses: actions/setup-node@v3
       with:
         node-version: '16'
     - name: Build it
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
-        npm install
+        npm ci
         npm run dist
-    - uses: actions/upload-artifact@v2
+    - uses: actions/upload-artifact@v3.1.0
       with:
         name: windows-binaries
         path: |

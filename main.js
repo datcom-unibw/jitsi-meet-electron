@@ -1,4 +1,4 @@
-/* global __dirname, process */
+/* global __dirname */
 
 const {
     BrowserWindow,
@@ -20,6 +20,7 @@ const {
     setupScreenSharingMain
 } = require('@jitsi/electron-sdk');
 const path = require('path');
+const process = require('process');
 const URL = require('url');
 const config = require('./app/features/config');
 const { openExternalLink } = require('./app/features/utils/openExternalLink');
@@ -203,10 +204,8 @@ function createJitsiMeetWindow() {
         minHeight: 600,
         show: false,
         webPreferences: {
-            enableBlinkFeatures: 'RTCInsertableStreams,WebAssemblySimd,WebAssemblyCSP',
-            enableRemoteModule: true,
+            enableBlinkFeatures: 'WebAssemblyCSP',
             contextIsolation: false,
-            nativeWindowOpen: true,
             nodeIntegration: false,
             preload: path.resolve(basePath, './build/preload.js')
         }

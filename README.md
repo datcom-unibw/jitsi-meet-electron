@@ -58,6 +58,7 @@ Download our latest release and you're off to the races!
 ```
 Content-Security-Policy "frame-ancestors [looks like any value is bad]";
 X-Frame-Options "DENY";
+X-Frame-Options "sameorigin";
 ```
 A working Content Security Policy looks like that:
 ```
@@ -193,6 +194,24 @@ On macOS Catalina a warning will be displayed on first install. The app won't op
 ### GNU/Linux
 
 If after downloading it, you can't execute the file directly, try running `chmod u+x ./jitsi-meet-x86_64.AppImage`
+
+On Ubuntu 22.04 the AppImage will fail with a fuse error (as AppImage uses libfuse2, while 22.04 already comes with libfuse3 by default):
+
+```
+dlopen(): error loading libfuse.so.2
+```
+
+To fix this, install libfuse2 as follows:
+
+```
+sudo apt install libfuse2
+```
+
+In case you experience a blank page after jitsi server upgrades, try removing the local cache files:
+
+```
+rm -rf ~/.config/Jitsi\ Meet/
+```
 
 <details><summary>NOTE for old GNU/Linux distributions</summary>
 
