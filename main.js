@@ -35,14 +35,14 @@ app.commandLine.appendSwitch('disable-site-isolation-trials');
 
 // This allows BrowserWindow.setContentProtection(true) to work on macOS.
 // https://github.com/electron/electron/issues/19880
-app.commandLine.appendSwitch('disable-features', 'IOSurfaceCapturer');
+app.commandLine.appendSwitch('disable-features', 'DesktopCaptureMacV2,IOSurfaceCapturer');
 
 // Enable Opus RED field trial.
 app.commandLine.appendSwitch('force-fieldtrials', 'WebRTC-Audio-Red-For-Opus/Enabled/');
 
-// Enable optional PipeWire support.
+// Wayland: Enable optional PipeWire and window decorations support.
 if (!app.commandLine.hasSwitch('enable-features')) {
-    app.commandLine.appendSwitch('enable-features', 'WebRTCPipeWireCapturer');
+    app.commandLine.appendSwitch('enable-features', 'WebRTCPipeWireCapturer,WaylandWindowDecorations');
 }
 
 autoUpdater.logger = require('electron-log');
@@ -207,30 +207,79 @@ function createJitsiMeetWindow() {
             enableBlinkFeatures: 'WebAssemblyCSP',
             contextIsolation: false,
             nodeIntegration: false,
-            preload: path.resolve(basePath, './build/preload.js')
+            preload: path.resolve(basePath, './build/preload.js'),
+            sandbox: false
         }
+    };
+
+    const windowOpenHandler = ({ url, frameName }) => {
+        const target = getPopupTarget(url, frameName);
+
+        if (!target || target === 'browser') {
+            openExternalLink(url);
+
+            return { action: 'deny' };
+        }
+
+        if (target === 'electron') {
+            return { action: 'allow' };
+        }
+
+        return { action: 'deny' };
     };
 
     mainWindow = new BrowserWindow(options);
     windowState.manage(mainWindow);
     mainWindow.loadURL(indexURL);
 
+    mainWindow.webContents.setWindowOpenHandler(windowOpenHandler);
+
+    // Block access to file:// URLs.
+    const fileFilter = {
+        urls: [ 'file://*' ]
+    };
+
+    mainWindow.webContents.session.webRequest.onBeforeSendHeaders(fileFilter, (details, callback) => {
+        const requestedUrl = new URL.URL(details.url);
+        const requestedBasename = path.resolve(requestedUrl.pathname);
+        const appBasePath = path.resolve(basePath);
+
+        if (!requestedBasename.startsWith(appBasePath)) {
+            callback(false);
+
+            return;
+        }
+
+        callback(true);
+    });
+
+    // Filter out x-frame-options and frame-ancestors CSP to allow loading jitsi via the iframe API
+    // Resolves https://github.com/jitsi/jitsi-meet-electron/issues/285
+    mainWindow.webContents.session.webRequest.onHeadersReceived((details, callback) => {
+        delete details.responseHeaders['x-frame-options'];
+
+        if (details.responseHeaders['content-security-policy']) {
+            const cspFiltered = details.responseHeaders['content-security-policy'][0]
+                .split(';')
+                .filter(x => x.indexOf('frame-ancestors') === -1)
+                .join(';');
+
+            details.responseHeaders['content-security-policy'] = [ cspFiltered ];
+        }
+
+        callback({
+            responseHeaders: details.responseHeaders
+        });
+    });
+
     initPopupsConfigurationMain(mainWindow);
-    setupAlwaysOnTopMain(mainWindow);
+    setupAlwaysOnTopMain(mainWindow, null, windowOpenHandler);
     setupPowerMonitorMain(mainWindow);
     setupScreenSharingMain(mainWindow, config.default.appName, pkgJson.build.appId);
     if (ENABLE_REMOTE_CONTROL) {
         new RemoteControlMain(mainWindow); // eslint-disable-line no-new
     }
 
-    mainWindow.webContents.on('new-window', (event, url, frameName) => {
-        const target = getPopupTarget(url, frameName);
-
-        if (!target || target === 'browser') {
-            event.preventDefault();
-            openExternalLink(url);
-        }
-    });
     mainWindow.on('closed', () => {
         mainWindow = null;
     });
@@ -385,4 +434,11 @@ ipcMain.on('renderer-ready', () => {
             .webContents
             .send('protocol-data-msg', protocolDataForFrontApp);
     }
+});
+
+/**
+ * Handle opening external links in the main process.
+ */
+ipcMain.on('jitsi-open-url', (event, someUrl) => {
+    openExternalLink(someUrl);
 });

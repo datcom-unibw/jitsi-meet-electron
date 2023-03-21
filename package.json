@@ -62,8 +62,16 @@
       "category": "VideoConference;AudioVideo;Audio;Video;Network",
       "description": "DatCom Meet Desktop App",
       "desktop": {
+        "Comment[de]": "DatCom Meet Desktop App",
+        "Comment[es]": "Aplicación de escritorio DatCom Meet",
+        "Comment[fr]": "Application de bureau DatCom Meet",
+        "Comment[hr]": "DatCom Meet desktop aplikacija",
         "Comment[hu]": "Asztali DatCom Meet-alkalmazás",
-        "Comment[hr]": "DatCom Meet desktop aplikacija"
+        "Comment[it]": "Applicazione DatCom Meet Desktop",
+        "Comment[pt]": "Aplicativo DatCom Meet",
+        "Comment[ru]": "Приложение DatCom Meet",
+        "Comment[zh-CN]": "DatCom Meet 桌面应用",
+        "Comment[zh-TW]": "DatCom Meet 桌面應用程式"
       },
       "executableName": "datcom-meet",
       "target": [
@@ -130,7 +138,7 @@
   "readmeFilename": "README.md",
   "license": "Apache-2.0",
   "dependencies": {
-    "@jitsi/electron-sdk": "^3.0.15",
+    "@jitsi/electron-sdk": "5.0.1",
     "electron-debug": "^3.2.0",
     "electron-reload": "^1.5.0"
   },
@@ -153,13 +161,14 @@
     "@babel/preset-env": "^7.16.11",
     "@babel/preset-flow": "^7.16.7",
     "@babel/preset-react": "^7.16.7",
+    "@hapi/bourne": "^3.0.0",
     "@jitsi/js-utils": "2.0.0",
     "@svgr/webpack": "^6.2.1",
     "babel-eslint": "10.0.3",
     "babel-loader": "^8.2.3",
     "concurrently": "5.1.0",
     "css-loader": "^6.7.1",
-    "electron": "19.0.8",
+    "electron": "21.4.1",
     "electron-builder": "23.1.0",
     "electron-context-menu": "^2.5.0",
     "electron-is-dev": "^1.2.0",
