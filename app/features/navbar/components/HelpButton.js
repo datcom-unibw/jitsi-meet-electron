@@ -1,27 +1,19 @@
-// @flow
 
-import Droplist, { Item, Group } from '@atlaskit/droplist';
+import Droplist, { Group, Item } from '@atlaskit/droplist';
 import HelpIcon from '@atlaskit/icon/glyph/question-circle';
-
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
 
+import { version } from '../../../../package.json';
 import config from '../../config';
 import { openExternalLink } from '../../utils';
-import { version } from '../../../../package.json';
 
-type State = {
-
-    /**
-     * Whether the droplist is open or not.
-     */
-    droplistOpen: boolean
-};
 
 /**
  * Help button for Navigation Bar.
  */
-class HelpButton extends Component<*, State> {
+class HelpButton extends Component {
     /**
      * Initializes a new {@code HelpButton} instance.
      *
@@ -49,11 +41,6 @@ class HelpButton extends Component<*, State> {
 
     }
 
-    _onAboutClick: (*) => void;
-
-    _onSourceClick: (*) => void;
-
-    _onIconClick: (*) => void;
 
     /**
      * Toggles the droplist.
@@ -66,7 +53,6 @@ class HelpButton extends Component<*, State> {
         });
     }
 
-    _onOpenChange: (*) => void;
 
     /**
      * Closes droplist when clicked outside.
@@ -79,13 +65,6 @@ class HelpButton extends Component<*, State> {
         });
     }
 
-    _onPrivacyClick: (*) => void;
-
-    _onTermsClick: (*) => void;
-
-    _onSendFeedbackClick: (*) => void;
-
-    _onDeHelpClick: (*) => void;
 
     /**
      * Render function of component.
@@ -132,5 +111,9 @@ class HelpButton extends Component<*, State> {
         );
     }
 }
+
+HelpButton.propTypes = {
+    t: PropTypes.func.isRequired
+};
 
 export default withTranslation()(HelpButton);

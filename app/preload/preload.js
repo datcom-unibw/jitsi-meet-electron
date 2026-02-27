@@ -1,12 +1,15 @@
-const { ipcRenderer } = require('electron');
-const { RemoteControl,
-    setupScreenSharingRender,
-    setupAlwaysOnTopRender,
+const {
     initPopupsConfigurationRender,
+    setupScreenSharingRender,
+    setupPictureInPictureRender,
+    setupRemoteControlRender,
     setupPowerMonitorRender
 } = require('@jitsi/electron-sdk');
+const { ipcRenderer } = require('electron');
 
 const whitelistedIpcChannels = [ 'protocol-data-msg', 'renderer-ready' ];
+
+ipcRenderer.setMaxListeners(0);
 
 /**
  * Open an external URL.
@@ -28,17 +31,14 @@ function openExternalLink(url) {
 function setupRenderer(api, options = {}) {
     initPopupsConfigurationRender(api);
 
-    const iframe = api.getIFrame();
-
     setupScreenSharingRender(api);
 
     if (options.enableRemoteControl) {
-        new RemoteControl(iframe); // eslint-disable-line no-new
+        setupRemoteControlRender(api);
     }
 
-    // Allow window to be on top if enabled in settings
     if (options.enableAlwaysOnTopWindow) {
-        setupAlwaysOnTopRender(api, null, { showOnPrejoin: true });
+        setupPictureInPictureRender(api);
     }
 
     setupPowerMonitorRender(api);
@@ -48,26 +48,29 @@ window.jitsiNodeAPI = {
     openExternalLink,
     setupRenderer,
     ipc: {
-        on: (channel, listener) => {
+        addListener: (channel, listener) => {
             if (!whitelistedIpcChannels.includes(channel)) {
                 return;
             }
 
-            return ipcRenderer.on(channel, listener);
+            const cb = (_event, ...args) => {
+                listener(...args);
+            };
+
+            const remove = () => {
+                ipcRenderer.removeListener(channel, cb);
+            };
+
+            ipcRenderer.addListener(channel, cb);
+
+            return remove;
         },
         send: channel => {
             if (!whitelistedIpcChannels.includes(channel)) {
                 return;
             }
 
-            return ipcRenderer.send(channel);
-        },
-        removeListener: (channel, listener) => {
-            if (!whitelistedIpcChannels.includes(channel)) {
-                return;
-            }
-
-            return ipcRenderer.removeListener(channel, listener);
+            ipcRenderer.send(channel);
         }
     }
 };

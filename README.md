@@ -42,7 +42,8 @@ The additional command line parameter "--no-sandbox" can be necessary in some ca
 
 - [End-to-End Encryption](https://jitsi.org/blog/e2ee/) support (BETA)
 - Works with any Jitsi Meet deployment
-- Builtin auto-updates
+- Built-in auto-updates
+- Screen sharing
 - ~Remote control~ (currently [disabled](https://github.com/jitsi/jitsi-meet-electron/issues/483) due to [security issues](https://github.com/jitsi/security-advisories/blob/master/advisories/JSA-2020-0001.md))
 - Always-On-Top window
 - Support for deeplinks such as `jitsi-meet://myroom` (will open `myroom` on the configured Jitsi instance) or `jitsi-meet://jitsi.mycompany.com/myroom` (will open `myroom` on the Jitsi instance running on `jitsi.mycompany.com`)
@@ -78,7 +79,7 @@ Building the application requires *git*, *node-js* and *python* on all platforms
 Building on Windows additionally requires the C++ component of [*Visual Studio*](https://visualstudio.microsoft.com/).
 The *Community Edition* is sufficient.
 
-Install Node.js 16 first (or if you use [nvm](https://github.com/nvm-sh/nvm), switch to Node.js 14 by running `nvm use`).
+Install Node.js 22 first (or if you use [nvm](https://github.com/nvm-sh/nvm), switch to it by running `nvm use`).
 
 Clone the git repositoy into a local directory:
 
@@ -192,54 +193,37 @@ On macOS Catalina, a warning will be displayed on first install. The app won't o
 
 * If you can't execute the file directly after downloading it, try running `chmod u+x ./jitsi-meet-x86_64.AppImage`
 
-* On Ubuntu 22.04, the AppImage will fail with a fuse error (as the AppImage uses `libfuse2`, while 22.04 comes with `libfuse3` by default):
+* On Ubuntu 22.04 and later, the AppImage will fail with a FUSE error (as the AppImage uses `libfuse2`, while 22.04 comes with `libfuse3` by default):
 
   ```
   dlopen(): error loading libfuse.so.2
   ```
 
-  To fix this, install libfuse2 as follows:
+  To fix this, install `libfuse2` as follows:
 
   ```
   sudo apt install libfuse2
   ```
 
+* On Ubuntu 24.04 and later, the AppImage will fail with a sandboxing error (`The SUID sandbox helper binary was found, but is not configured correctly...`)
+  This is due to an AppArmor conflict that restricts unprivileged user namespaces ([jitsi/jitsi-meet-electron#965](https://github.com/jitsi/jitsi-meet-electron/issues/965),
+  [Ubuntu blog post](https://ubuntu.com/blog/ubuntu-23-10-restricted-unprivileged-user-namespaces)).
 
-* Under wayland, experimental native wayland support can be enabled with the command-line switch `--ozone-platform-hint` set to `auto`:
+  To work around this, disable the use of the sandbox with `--no-sandbox`:
 
   ```
-  ./jitsi-meet-x86_64.AppImage --ozone-platform-hint=auto
+  ./jitsi-meet-x86_64.AppImage --no-sandbox
   ```
-
-  Note that screen-sharing is not currently supported under wayland, and the permissions prompt may loop endlessly.
-
-* If you experience a blank page after jitsi server upgrades, try removing the local cache files:
+  
+* If you experience a blank page after a Jitsi server upgrades, try removing the local cache files:
 
   ```
   rm -rf ~/.config/Jitsi\ Meet/
   ```
 
-<details><summary>NOTE for old GNU/Linux distributions</summary>
-
-You might get the following error:
-
-```
-FATAL:nss_util.cc(632)] NSS_VersionCheck("3.26") failed. NSS >= 3.26 is required.
-Please upgrade to the latest NSS, and if you still get this error, contact your
-distribution maintainer.
-```
-
-If you do, please install NSS (example for Debian or Ubuntu):
-
-```bash
-sudo apt-get install libnss3
-```
-
-</details>
-
 ## Translations
 
-The JSON files are for all the strings inside the application, and can be translated [here](/app/i18n/lang).
+The JSON files contain all the strings inside the application, and can be translated [here](/app/i18n/lang).
 
 New translations require the addition of a line in [index.js](/app/i18n/index.js).
 
@@ -248,7 +232,7 @@ Please search for `Comment[hu]` as an example to help add your translation of th
 
 ## License
 
-Apache 2. See the [LICENSE] file.
+Apache License 2.0. See the [LICENSE] file.
 
 ## Community
 
@@ -258,7 +242,7 @@ please join the [community forum].
 [Jitsi Meet]: https://github.com/jitsi/jitsi-meet
 [Electron]: https://electronjs.org/
 [latest release]: https://github.com/datcom-unibw/jitsi-meet-electron/releases/latest
-[jitsi-meet-electron-sdk]: https://github.com/jitsi/jitsi-meet-electron-sdk
-[jitsi-meet-electron-sdk README]: https://github.com/jitsi/jitsi-meet-electron-sdk/blob/master/README.md
+[`jitsi-meet-electron-sdk`]: https://github.com/jitsi/jitsi-meet-electron-sdk
+[`jitsi-meet-electron-sdk` `README`]: https://github.com/jitsi/jitsi-meet-electron-sdk/blob/master/README.md
 [community forum]: https://community.jitsi.org/
 [LICENSE]: LICENSE

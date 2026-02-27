@@ -1,4 +1,3 @@
-// @flow
 
 import styled from 'styled-components';
 import uniLogo from '../../../images/uni-logo_schrift.png';

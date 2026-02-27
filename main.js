@@ -1,6 +1,14 @@
 /* global __dirname */
 
 const {
+    initPopupsConfigurationMain,
+    getPopupTarget,
+    setupPictureInPictureMain,
+    setupRemoteControlMain,
+    setupPowerMonitorMain,
+    setupScreenSharingMain
+} = require('@jitsi/electron-sdk');
+const {
     BrowserWindow,
     Menu,
     app,
@@ -11,38 +19,36 @@ const debug = require('electron-debug');
 const isDev = require('electron-is-dev');
 const { autoUpdater } = require('electron-updater');
 const windowStateKeeper = require('electron-window-state');
-const {
-    initPopupsConfigurationMain,
-    getPopupTarget,
-    RemoteControlMain,
-    setupAlwaysOnTopMain,
-    setupPowerMonitorMain,
-    setupScreenSharingMain
-} = require('@jitsi/electron-sdk');
 const path = require('path');
 const process = require('process');
 const URL = require('url');
+
 const config = require('./app/features/config');
 const { openExternalLink } = require('./app/features/utils/openExternalLink');
 const pkgJson = require('./package.json');
 
 const showDevTools = Boolean(process.env.SHOW_DEV_TOOLS) || (process.argv.indexOf('--show-dev-tools') > -1);
 
+// For enabling remote control, please change the ENABLE_REMOTE_CONTROL flag in
+// app/features/conference/components/Conference.js to true as well
 const ENABLE_REMOTE_CONTROL = false;
 
-// We need this because of https://github.com/electron/electron/issues/18214
-app.commandLine.appendSwitch('disable-site-isolation-trials');
+// Fix screen-sharing thumbnails being missing sometimes.
+// https://github.com/electron/electron/issues/44504
+const disabledFeatures = [
+    'ThumbnailCapturerMac:capture_mode/sc_screenshot_manager',
+    'ScreenCaptureKitPickerScreen',
+    'ScreenCaptureKitStreamPickerSonoma'
+];
 
-// This allows BrowserWindow.setContentProtection(true) to work on macOS.
-// https://github.com/electron/electron/issues/19880
-app.commandLine.appendSwitch('disable-features', 'DesktopCaptureMacV2,IOSurfaceCapturer');
+app.commandLine.appendSwitch('disable-features', disabledFeatures.join(','));
 
 // Enable Opus RED field trial.
 app.commandLine.appendSwitch('force-fieldtrials', 'WebRTC-Audio-Red-For-Opus/Enabled/');
 
-// Wayland: Enable optional PipeWire and window decorations support.
+// Wayland: Enable optional PipeWire support.
 if (!app.commandLine.hasSwitch('enable-features')) {
-    app.commandLine.appendSwitch('enable-features', 'WebRTCPipeWireCapturer,WaylandWindowDecorations');
+    app.commandLine.appendSwitch('enable-features', 'WebRTCPipeWireCapturer');
 }
 
 autoUpdater.logger = require('electron-log');
@@ -177,7 +183,8 @@ function createJitsiMeetWindow() {
     // Load the previous window state with fallback to defaults.
     const windowState = windowStateKeeper({
         defaultWidth: 800,
-        defaultHeight: 600
+        defaultHeight: 600,
+        fullScreen: false
     });
 
     // Path to root directory.
@@ -232,7 +239,9 @@ function createJitsiMeetWindow() {
     windowState.manage(mainWindow);
     mainWindow.loadURL(indexURL);
 
-    mainWindow.webContents.setWindowOpenHandler(windowOpenHandler);
+    if (isDev) {
+        mainWindow.webContents.session.clearCache();
+    }
 
     // Block access to file:// URLs.
     const fileFilter = {
@@ -240,17 +249,17 @@ function createJitsiMeetWindow() {
     };
 
     mainWindow.webContents.session.webRequest.onBeforeSendHeaders(fileFilter, (details, callback) => {
-        const requestedUrl = new URL.URL(details.url);
-        const requestedBasename = path.resolve(requestedUrl.pathname);
+        const requestedPath = path.resolve(URL.fileURLToPath(details.url));
         const appBasePath = path.resolve(basePath);
 
-        if (!requestedBasename.startsWith(appBasePath)) {
-            callback(false);
+        if (!requestedPath.startsWith(appBasePath)) {
+            callback({ cancel: true });
+            console.warn(`Rejected file URL: ${details.url}`);
 
             return;
         }
 
-        callback(true);
+        callback({ cancel: false });
     });
 
     // Filter out x-frame-options and frame-ancestors CSP to allow loading jitsi via the iframe API
@@ -267,17 +276,55 @@ function createJitsiMeetWindow() {
             details.responseHeaders['content-security-policy'] = [ cspFiltered ];
         }
 
+        if (details.responseHeaders['Content-Security-Policy']) {
+            const cspFiltered = details.responseHeaders['Content-Security-Policy'][0]
+                .split(';')
+                .filter(x => x.indexOf('frame-ancestors') === -1)
+                .join(';');
+
+            details.responseHeaders['Content-Security-Policy'] = [ cspFiltered ];
+        }
+
         callback({
             responseHeaders: details.responseHeaders
         });
     });
 
-    initPopupsConfigurationMain(mainWindow);
-    setupAlwaysOnTopMain(mainWindow, null, windowOpenHandler);
+    // Block redirects.
+    const allowedRedirects = [
+        'http:',
+        'https:',
+        'ws:',
+        'wss:'
+    ];
+
+    mainWindow.webContents.addListener('will-redirect', (ev, url) => {
+        const requestedUrl = new URL.URL(url);
+
+        if (!allowedRedirects.includes(requestedUrl.protocol)) {
+            console.warn(`Disallowing redirect to ${url}`);
+            ev.preventDefault();
+        }
+    });
+
+    // Block opening any external applications.
+    mainWindow.webContents.session.setPermissionRequestHandler((_, permission, callback, details) => {
+        if (permission === 'openExternal') {
+            console.warn(`Disallowing opening ${details.externalURL}`);
+            callback(false);
+
+            return;
+        }
+
+        callback(true);
+    });
+
+    initPopupsConfigurationMain(mainWindow, windowOpenHandler);
+    setupPictureInPictureMain(mainWindow);
     setupPowerMonitorMain(mainWindow);
     setupScreenSharingMain(mainWindow, config.default.appName, pkgJson.build.appId);
     if (ENABLE_REMOTE_CONTROL) {
-        new RemoteControlMain(mainWindow); // eslint-disable-line no-new
+        setupRemoteControlMain(mainWindow);
     }
 
     mainWindow.on('closed', () => {

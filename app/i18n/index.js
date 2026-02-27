@@ -1,6 +1,6 @@
 import i18n from 'i18next';
-import { initReactI18next } from 'react-i18next';
 import moment from 'moment';
+import { initReactI18next } from 'react-i18next';
 
 const languages = {
     de: { translation: require('./lang/de.json') },
@@ -8,6 +8,7 @@ const languages = {
     es: { translation: require('./lang/es.json') },
     fr: { translation: require('./lang/fr.json') },
     gl: { translation: require('./lang/gl.json') },
+    hi: { translation: require('./lang/hi.json') },
     hr: { translation: require('./lang/hr.json') },
     hu: { translation: require('./lang/hu.json') },
     it: { translation: require('./lang/it.json') },

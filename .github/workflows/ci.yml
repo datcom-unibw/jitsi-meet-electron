@@ -13,12 +13,12 @@ on:
 jobs:
   build-linux:
     name: Linux
-    runs-on: ubuntu-20.04
+    runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v6
+    - uses: actions/setup-node@v6
       with:
-        node-version: '16'
+        node-version-file: '.nvmrc'
     - name: Build it
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -26,38 +26,42 @@ jobs:
         npm ci
         npm run lint
         npm run dist
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v6
       with:
         name: linux-binaries
         path: |
           dist/jitsi-meet-amd64.deb
           dist/jitsi-meet-x86_64.AppImage
+          dist/jitsi-meet-arm64.deb
+          dist/jitsi-meet-arm64.AppImage
           dist/latest-linux.yml
+          dist/latest-linux-arm64.yml
   build-mac:
     name: macOS
-    runs-on: macos-11
+    runs-on: macos-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v6
+    - uses: actions/setup-node@v6
       with:
-        node-version: '16'
+        node-version-file: '.nvmrc'
     - name: Prepare for app signing and notarization
       env:
-        MAC_CERT_PASSWORD: ${{ secrets.mac_cert_password }}
-      if: ${{ env.MAC_CERT_PASSWORD }}
+        MAC_CERT: ${{ secrets.mac_cert }}
+      if: ${{ env.MAC_CERT }}
       run: |
         echo "CSC_LINK=${{ secrets.mac_cert }}" >> $GITHUB_ENV
         echo "CSC_KEY_PASSWORD=${{ secrets.mac_cert_password }}" >> $GITHUB_ENV
+        echo "CSC_FOR_PULL_REQUEST=true" >> $GITHUB_ENV
         echo "APPLE_ID=${{ secrets.apple_id }}" >> $GITHUB_ENV
-        echo "APPLE_ID_PASSWORD=${{ secrets.apple_id_password }}" >> $GITHUB_ENV
-        echo "TEAM_ID=${{ secrets.team_id }}" >> $GITHUB_ENV
+        echo "APPLE_APP_SPECIFIC_PASSWORD=${{ secrets.apple_id_password }}" >> $GITHUB_ENV
+        echo "APPLE_TEAM_ID=${{ secrets.team_id }}" >> $GITHUB_ENV
     - name: Build it
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         npm ci
         npm run dist
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v6
       with:
         name: mac-binaries
         path: |
@@ -66,19 +70,19 @@ jobs:
           dist/latest-mac.yml
   build-windows:
     name: Windows
-    runs-on: windows-2022
+    runs-on: windows-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: actions/setup-node@v3
+    - uses: actions/checkout@v6
+    - uses: actions/setup-node@v6
       with:
-        node-version: '16'
+        node-version-file: '.nvmrc'
     - name: Build it
       env:
         GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: |
         npm ci
         npm run dist
-    - uses: actions/upload-artifact@v3
+    - uses: actions/upload-artifact@v6
       with:
         name: windows-binaries
         path: |

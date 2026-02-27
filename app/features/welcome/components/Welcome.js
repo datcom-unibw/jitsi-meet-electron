@@ -1,82 +1,33 @@
-// @flow
 
 import { FieldTextStateless } from '@atlaskit/field-text';
 import { SpotlightTarget } from '@atlaskit/onboarding';
 import Page from '@atlaskit/page';
 import { AtlasKitThemeProvider } from '@atlaskit/theme';
-
 import { generateRoomWithoutSeparator } from '@jitsi/js-utils/random';
+import PropTypes from 'prop-types';
 import React, { Component } from 'react';
 import { withTranslation } from 'react-i18next';
-import { compose } from 'redux';
-import type { Dispatch } from 'redux';
 import { connect } from 'react-redux';
 import { push } from 'react-router-redux';
+import { compose } from 'redux';
 
 import { Navbar } from '../../navbar';
 import { Onboarding, startOnboarding } from '../../onboarding';
 import { RecentList } from '../../recent-list';
 import { createConferenceObjectFromURL } from '../../utils';
-
 import { Body, FieldWrapper, Form, Header, Label, Wrapper, CustomButton } from '../styled';
 
-type Props = {
-
-    /**
-     * Redux dispatch.
-     */
-    dispatch: Dispatch<*>;
-
-    /**
-     * React Router location object.
-     */
-    location: Object;
-
-    /**
-     * I18next translate function.
-     */
-     t: Function;
-};
-
-type State = {
-
-    /**
-     * Timer for animating the room name geneeration.
-     */
-    animateTimeoutId: ?TimeoutID,
-
-    /**
-     * Generated room name.
-     */
-    generatedRoomname: string,
-
-    /**
-     * Current room name placeholder.
-     */
-    roomPlaceholder: string,
-
-    /**
-     * Timer for re-generating a new room name.
-     */
-    updateTimeoutId: ?TimeoutID,
-
-    /**
-     * URL of the room to join.
-     * If this is not a url it will be treated as room name for default domain.
-     */
-    url: string;
-};
 
 /**
  * Welcome Component.
  */
-class Welcome extends Component<Props, State> {
+class Welcome extends Component {
     /**
      * Initializes a new {@code Welcome} instance.
      *
      * @inheritdoc
      */
-    constructor(props: Props) {
+    constructor(props) {
         super(props);
 
         // Initialize url value in state if passed using location state object.
@@ -149,7 +100,6 @@ class Welcome extends Component<Props, State> {
         );
     }
 
-    _animateRoomnameChanging: (string) => void;
 
     /**
      * Animates the changing of the room name.
@@ -159,7 +109,7 @@ class Welcome extends Component<Props, State> {
      * @private
      * @returns {void}
      */
-    _animateRoomnameChanging(word: string) {
+    _animateRoomnameChanging(word) {
         let animateTimeoutId;
         const roomPlaceholder = this.state.roomPlaceholder + word.slice(0, 1);
 
@@ -189,7 +139,6 @@ class Welcome extends Component<Props, State> {
         clearTimeout(this.state.updateTimeoutId);
     }
 
-    _onFormSubmit: (*) => void;
 
     /**
      * Prevents submission of the form and delegates the join logic.
@@ -197,12 +146,11 @@ class Welcome extends Component<Props, State> {
      * @param {Event} event - Event by which this function is called.
      * @returns {void}
      */
-    _onFormSubmit(event: Event) {
+    _onFormSubmit(event) {
         event.preventDefault();
         this._onJoin();
     }
 
-    _onJoin: (*) => void;
 
     /**
      * Redirect and join conference.
@@ -221,7 +169,6 @@ class Welcome extends Component<Props, State> {
         this.props.dispatch(push('/conference', conference));
     }
 
-    _onURLChange: (*) => void;
 
     /**
      * Keeps URL input value and URL in state in sync.
@@ -230,7 +177,7 @@ class Welcome extends Component<Props, State> {
      * this function is called.
      * @returns {void}
      */
-    _onURLChange(event: SyntheticInputEvent<HTMLInputElement>) {
+    _onURLChange(event) {
         this.setState({
             url: event.currentTarget.value
         });
@@ -285,7 +232,6 @@ class Welcome extends Component<Props, State> {
         );
     }
 
-    _updateRoomname: () => void;
 
     /**
      * Triggers the generation of a new room name and initiates an animation of
@@ -309,5 +255,11 @@ class Welcome extends Component<Props, State> {
             () => this._animateRoomnameChanging(generatedRoomname));
     }
 }
+
+Welcome.propTypes = {
+    dispatch: PropTypes.func.isRequired,
+    location: PropTypes.object.isRequired,
+    t: PropTypes.func.isRequired
+};
 
 export default compose(connect(), withTranslation())(Welcome);
