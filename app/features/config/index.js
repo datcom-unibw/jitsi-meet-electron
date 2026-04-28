@@ -13,7 +13,7 @@ export default {
     /**
      * Application name.
      */
-    appName: 'DatCom Meet',
+    appName: 'AnSi Meet',
 
     /**
     * The prefix for application protocol.

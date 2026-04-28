@@ -1,8 +1,8 @@
-# DatCom Meet Electron
+# AnSi Meet Electron
 
 Desktop application for [Jitsi Meet] built with [Electron].
 
-This is a branded version of the *Jitsi Meet Electron* software by the *Privacy and Compliance* group at *Universität der Bundeswehr München*.  
+This is a branded version of the *Jitsi Meet Electron* software by the *Applied Security Analysis* group at *Universität der Bundeswehr München*.  
 https://github.com/datcom-unibw/jitsi-meet-electron
 
 If you are not looking for this specific version, you are probably looking for the original software, available here:  
@@ -18,21 +18,21 @@ https://github.com/jitsi/jitsi-meet-electron
 
 ### Windows
 
-[Download](https://github.com/datcom-unibw/jitsi-meet-electron/releases/latest/download/datcom-meet.exe) and run "datcom-meet.exe".
+[Download](https://github.com/datcom-unibw/jitsi-meet-electron/releases/latest/download/ansi-meet.exe) and run "ansi-meet.exe".
 
 The installer is signed by *Universität der Bundeswehr München*.
 
 ### macOS
 
-[Download](https://github.com/datcom-unibw/jitsi-meet-electron/releases/latest/download/datcom-meet.dmg) and install "datcom-meet.dmg".
+[Download](https://github.com/datcom-unibw/jitsi-meet-electron/releases/latest/download/ansi-meet.dmg) and install "ansi-meet.dmg".
 
 The Apple Disk Image is not signed. Running the application must be enabled in the *macOS* privacy settings.
 
 ### Linux
 
-[Download](https://github.com/datcom-unibw/jitsi-meet-electron/releases/latest/download/datcom-meet-x86_64.AppImage) and run "datcom-meet-x86_64.AppImage",
+[Download](https://github.com/datcom-unibw/jitsi-meet-electron/releases/latest/download/ansi-meet-x86_64.AppImage) and run "ansi-meet-x86_64.AppImage",
 
-or [download](https://github.com/datcom-unibw/jitsi-meet-electron/releases/latest/download/datcom-meet-amd64.deb) and install the Debian package "datcom-meet-amd64.deb".
+or [download](https://github.com/datcom-unibw/jitsi-meet-electron/releases/latest/download/ansi-meet-amd64.deb) and install the Debian package "ansi-meet-amd64.deb".
 
 The additional command line parameter "--no-sandbox" can be necessary in some cases.
 

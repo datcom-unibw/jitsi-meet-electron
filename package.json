@@ -1,9 +1,9 @@
 {
-  "name": "datcom-meet-electron",
+  "name": "ansi-meet-electron",
   "version": "2026.1.100",
-  "description": "Electron application for Jitsi Meet, branded by DatCom",
+  "description": "Electron application for Jitsi Meet, branded by AnSi",
   "main": "./build/main.js",
-  "productName": "DatCom Meet",
+  "productName": "AnSi Meet",
   "private": true,
   "scripts": {
     "start": "webpack --config ./webpack.main.js --mode development && concurrently \"npm:watch\" \"electron ./build/main.js\"",
@@ -19,8 +19,8 @@
     "node": ">=22.0.0"
   },
   "build": {
-    "appId": "org.unibw.datcom.datcom-meet",
-    "productName": "DatCom Meet",
+    "appId": "de.unibw.inf.ansi.ansi-meet",
+    "productName": "AnSi Meet",
     "generateUpdatesFilesForAllChannels": true,
     "npmRebuild": false,
     "files": [
@@ -30,7 +30,7 @@
       "!main.js"
     ],
     "mac": {
-      "artifactName": "datcom-meet.${ext}",
+      "artifactName": "ansi-meet.${ext}",
       "target": [
         {
           "arch": "universal",
@@ -45,8 +45,8 @@
       "darkModeSupport": true,
       "entitlements": "resources/entitlements.mac.plist",
       "extendInfo": {
-        "NSCameraUsageDescription": "DatCom Meet requires access to your camera in order to make video-calls.",
-        "NSMicrophoneUsageDescription": "DatCom Meet requires access to your microphone in order to make calls (audio/video).",
+        "NSCameraUsageDescription": "AnSi Meet requires access to your camera in order to make video-calls.",
+        "NSMicrophoneUsageDescription": "AnSi Meet requires access to your microphone in order to make calls (audio/video).",
         "LSMultipleInstancesProhibited": true
       }
     },
@@ -56,24 +56,24 @@
       "hardenedRuntime": false
     },
     "linux": {
-      "artifactName": "datcom-meet-${arch}.${ext}",
+      "artifactName": "ansi-meet-${arch}.${ext}",
       "category": "VideoConference;AudioVideo;Audio;Video;Network",
-      "description": "DatCom Meet Desktop App",
+      "description": "AnSi Meet Desktop App",
       "desktop": {
         "entry": {
-          "Comment[de]": "DatCom Meet Desktop App",
-          "Comment[es]": "Aplicación de escritorio DatCom Meet",
-          "Comment[fr]": "Application de bureau DatCom Meet",
-          "Comment[hr]": "DatCom Meet desktop aplikacija",
-          "Comment[hu]": "Asztali DatCom Meet-alkalmazás",
-          "Comment[it]": "Applicazione DatCom Meet Desktop",
-          "Comment[pt]": "Aplicativo DatCom Meet",
-          "Comment[ru]": "Приложение DatCom Meet",
-          "Comment[zh-CN]": "DatCom Meet 桌面应用",
-          "Comment[zh-TW]": "DatCom Meet 桌面應用程式"
+          "Comment[de]": "AnSi Meet Desktop App",
+          "Comment[es]": "Aplicación de escritorio AnSi Meet",
+          "Comment[fr]": "Application de bureau AnSi Meet",
+          "Comment[hr]": "AnSi Meet desktop aplikacija",
+          "Comment[hu]": "Asztali AnSi Meet-alkalmazás",
+          "Comment[it]": "Applicazione AnSi Meet Desktop",
+          "Comment[pt]": "Aplicativo AnSi Meet",
+          "Comment[ru]": "Приложение AnSi Meet",
+          "Comment[zh-CN]": "AnSi Meet 桌面应用",
+          "Comment[zh-TW]": "AnSi Meet 桌面應用程式"
         }
       },
-      "executableName": "datcom-meet",
+      "executableName": "ansi-meet",
       "target": [
         {
           "arch": "x64",
@@ -94,7 +94,7 @@
       ]
     },
     "win": {
-      "artifactName": "datcom-meet.${ext}",
+      "artifactName": "ansi-meet.${ext}",
       "target": [
         {
           "arch": [
@@ -131,9 +131,10 @@
     "webrtc",
     "xmpp",
     "electron",
+    "ansi-meet",
     "datcom-meet"
   ],
-  "author": "DatCom <feedback@datcom-unibw.de>",
+  "author": "AnSi <feedback@datcom-unibw.de>",
   "readmeFilename": "README.md",
   "license": "Apache-2.0",
   "dependencies": {
