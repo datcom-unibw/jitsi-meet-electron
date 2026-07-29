@@ -125,31 +125,7 @@ npm run clean && npm install && npm run dist
 
 #### Working with `jitsi-meet-electron-sdk`
 
-[`jitsi-meet-electron-sdk`] is a helper package which implements many features
-such as remote control and the always-on-top window. If new features are to be
-added or tested, running with a local version of these utils is very handy.
-
-By default, the @jitsi/electron-sdk is build from `npm`. The default dependency path in `package.json` is:
-
-```json
-"@jitsi/electron-sdk": "^3.0.0"
-```
-
-To work with a local copy, you must change the path to:
-
-```json
-"@jitsi/electron-sdk": "file:///Users/name/jitsi-meet-electron-sdk-copy",
-```
-
-To build the project, you must force it to take the sources, as `npm update` will
-not do it.
-
-```bash
-npm install @jitsi/electron-sdk --force
-```
-
-NOTE: Also check the [`jitsi-meet-electron-sdk` `README`] to see how to configure
-your environment.
+For instructions on SDK versus electron-app separation and how to set up local development using `npm link`, please refer to the [Contributing and Local Development guide in the Jitsi Handbook](https://jitsi.github.io/handbook/docs/dev-guide/dev-guide-electron-sdk#contributing-and-local-development).
 
 #### Publishing
 
@@ -178,28 +154,6 @@ On macOS Catalina, a warning will be displayed on first install. The app won't o
 ### GNU/Linux
 
 * If you can't execute the file directly after downloading it, try running `chmod u+x ./jitsi-meet-x86_64.AppImage`
-
-* On Ubuntu 22.04 and later, the AppImage will fail with a FUSE error (as the AppImage uses `libfuse2`, while 22.04 comes with `libfuse3` by default):
-
-  ```
-  dlopen(): error loading libfuse.so.2
-  ```
-
-  To fix this, install `libfuse2` as follows:
-
-  ```
-  sudo apt install libfuse2
-  ```
-
-* On Ubuntu 24.04 and later, the AppImage will fail with a sandboxing error (`The SUID sandbox helper binary was found, but is not configured correctly...`)
-  This is due to an AppArmor conflict that restricts unprivileged user namespaces ([jitsi/jitsi-meet-electron#965](https://github.com/jitsi/jitsi-meet-electron/issues/965),
-  [Ubuntu blog post](https://ubuntu.com/blog/ubuntu-23-10-restricted-unprivileged-user-namespaces)).
-
-  To work around this, disable the use of the sandbox with `--no-sandbox`:
-
-  ```
-  ./jitsi-meet-x86_64.AppImage --no-sandbox
-  ```
   
 * If you experience a blank page after a Jitsi server upgrades, try removing the local cache files:
 

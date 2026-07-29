@@ -10,23 +10,26 @@ Jitsi Meet Electron is a desktop application for Jitsi Meet built with Electron.
 
 ### Setup
 - **Install dependencies**: `npm install`
-  - Requires Node.js 22+ (see `.nvmrc`)
+  - Requires Node.js 24+ (see `.nvmrc`)
   - Linux requires: `libx11-dev zlib1g-dev libpng-dev libxtst-dev`
   - Windows requires: `windows-build-tools` (global install)
 
 ### Development
 - **Start in development mode**: `npm start`
-  - Runs webpack for main process, then starts concurrent watch + electron
+  - Runs esbuild for the main, preload, and renderer bundles, then starts concurrent watch + electron
   - Opens WebRTC internals window automatically in dev mode
 - **Start with DevTools open**: `SHOW_DEV_TOOLS=true npm start` or `npm start -- --show-dev-tools`
 - **Watch renderer changes**: `npm run watch` (runs automatically with `npm start`)
 
 ### Building
-- **Lint code**: `npm run lint`
+- **Lint code**: `npm run lint` (ESLint over `.js`, `.ts`, `.tsx`)
 - **Fix lint issues**: `npm run lint-fix`
-- **Build for production**: `npm run build` (compiles both main and renderer processes)
+- **Type-check**: `npm run type-check` (`tsc --noEmit`; esbuild itself does not type-check)
+- **Build for production**: `npm run build` (runs `type-check` then esbuild for the main, preload, and renderer bundles)
 - **Create distribution**: `npm run dist` (runs build then electron-builder)
 - **Clean build artifacts**: `npm run clean`
+
+The codebase is written in **TypeScript** (`.ts` / `.tsx`). esbuild strips types during bundling but does not check them, so type errors are caught by `npm run type-check` (and the type-aware ESLint pass), which `npm run build` runs first. The only remaining `.js` files are build tooling (`esbuild.js`, `.eslintrc.js`) and the vendored, pre-bundled `app/features/conference/external_api.js` (typed by an adjacent `external_api.d.ts`). Ambient type declarations live in `types/` (`global.d.ts` for the `window.jitsiNodeAPI` global and `process.mas`; `modules.d.ts` for untyped deps and `*.svg`/`*.png`/`*.css` imports). Shared redux/state interfaces live in `app/types.ts` (`IState`, `IConference`, etc.).
 
 ### CI Workflow
 The CI runs on push/PR to master:
@@ -39,7 +42,7 @@ The CI runs on push/PR to master:
 ### Dual-Process Architecture
 The application follows Electron's main/renderer process model:
 
-**Main Process** (`main.js`):
+**Main Process** (`main.ts`):
 - Entry point for Electron
 - Manages BrowserWindow lifecycle
 - Handles protocol calls (`jitsi-meet://` deeplinks)
@@ -54,26 +57,38 @@ The application follows Electron's main/renderer process model:
 - IPC communication with renderer
 
 **Renderer Process** (`app/` directory):
-- React application bundled via webpack
+- React application bundled via esbuild
 - Contains all UI components and business logic
-- Uses `@jitsi/electron-sdk` via preload script (`app/preload/preload.js`)
+- Uses `@jitsi/electron-sdk` via preload script (`app/preload/preload.ts`)
 - Communicates with main process via IPC
 
 ### Build System
-Uses two separate webpack configurations:
+A single esbuild script (`esbuild.js`) builds all three bundles into `build/`.
+Run it directly with target/flag arguments:
+- `node ./esbuild.js` — production build of everything
+- `node ./esbuild.js --dev` — development build (unminified, inline sourcemaps)
+- `node ./esbuild.js renderer --dev --watch` — watch/rebuild the renderer (this is `npm run watch`)
+- `node ./esbuild.js main` — build only main + preload
 
-**webpack.main.js**:
-- Target: `electron-main`
-- Bundles `main.js` and `app/preload/preload.js`
-- Externalizes electron-specific dependencies
+**Main config** (`main` target):
+- `platform: 'node'`, `format: 'cjs'`, `target: 'node22'`
+- Bundles `main.ts` and `app/preload/preload.ts`
+- Externalizes `electron` plus the runtime dependencies that ship in
+  `node_modules` (`@jitsi/electron-sdk`, `electron-debug`, `electron-reload`);
+  everything else (devDependencies used by the main process) is bundled in
 
-**webpack.renderer.js**:
-- Target: `web` (renderer runs without node integration)
-- Entry: `app/index.js`
-- Uses Babel to transpile for specific Electron version
-- Bundles React app with HTML generation via `HtmlWebpackPlugin`
-- Handles CSS, SVG (via @svgr/webpack), and PNG assets
-- Does NOT parse `external_api.js` (Jitsi Meet External API)
+**Renderer config** (`renderer` target):
+- `platform: 'browser'`, `format: 'iife'`, `target: 'chrome120'`
+- Entry: `app/index.tsx` → `build/app.js` (+ `build/app.css` from imported CSS)
+- JSX lives in `.tsx` files; esbuild compiles TS/TSX natively (classic runtime, React in scope)
+- `process.env.NODE_ENV` is injected via `define`; `global` is polyfilled via banner
+- Custom esbuild plugins replace the old webpack loaders/plugins:
+  - `svgr` — turns imported `.svg` files into React components (uses `@svgr/core`,
+    replacing `@svgr/webpack`; options `dimensions: false`, `expandProps: 'start'`)
+  - `external-api` — keeps the vendored, pre-bundled `external_api.js` usable
+    (strips its dangling sourceMappingURL; stands in for webpack's `noParse`)
+  - `html` — renders `index.html`/`meeting.html` from the `app/` templates and
+    injects the `<link>`/`<script>` tags (replaces `HtmlWebpackPlugin`)
 
 ### Feature-Based Architecture
 Code is organized by feature domain under `app/features/`:
@@ -96,19 +111,19 @@ app/features/
 Each feature typically includes:
 - `components/` - React components
 - `styled/` - Styled-components for styling
-- `actions.js` & `actionTypes.js` - Redux actions
-- `reducer.js` - Redux reducer
-- `middleware.js` - Redux middleware (if needed)
-- `index.js` - Public API exports
+- `actions.ts` & `actionTypes.ts` - Redux actions
+- `reducer.ts` - Redux reducer
+- `middleware.ts` - Redux middleware (if needed)
+- `index.ts` - Public API exports
 
 ### State Management
 Uses Redux with redux-persist:
 - **Persisted state**: `onboarding`, `recentList`, `settings` (stored in localStorage)
 - **Router integration**: `react-router-redux` for navigation
-- **Middleware**: Custom middleware in `app/features/redux/middleware.js`
+- **Middleware**: Custom middleware in `app/features/redux/middleware.ts`
 
 ### Conference Integration
-The `Conference` component (`app/features/conference/components/Conference.js`) is the core of the application:
+The `Conference` component (`app/features/conference/components/Conference.tsx`) is the core of the application:
 - Creates iframe using `JitsiMeetExternalAPI` from `external_api.js`
 - Handles meeting lifecycle events (`videoConferenceJoined`, `readyToClose`, `suspendDetected`)
 - Configures Jitsi Meet via `configOverwrite` and `interfaceConfigOverwrite`
@@ -118,7 +133,7 @@ The `Conference` component (`app/features/conference/components/Conference.js`) 
 - Supports remote control (controlled by `ENABLE_REMOTE_CONTROL` flag)
 
 ### Security Features
-Implemented in `main.js`:
+Implemented in `main.ts`:
 - Context isolation disabled for SDK integration (historical)
 - CSP header modification to allow iframe embedding
 - File URL access restricted to app base path
@@ -136,7 +151,7 @@ Supports `jitsi-meet://` protocol for deeplinks:
 ### Internationalization
 Uses i18next with react-i18next:
 - Translation files in `app/i18n/lang/`
-- New translations require updating `app/i18n/index.js`
+- New translations require updating `app/i18n/index.ts`
 - Locale passed to Jitsi Meet iframe via URL parameters
 
 ## Working with @jitsi/electron-sdk
@@ -194,10 +209,11 @@ Documented in README.md Publishing section:
 - **styled-components**: CSS-in-JS styling
 - **electron-updater**: Auto-update functionality
 - **electron-builder**: Application packaging
+- **esbuild**: Bundler for the main, preload, and renderer bundles (via `esbuild.js`)
 
 ## Important Flags and Constants
 
-- `ENABLE_REMOTE_CONTROL`: Must be enabled in both `main.js:34` and `Conference.js:18`
+- `ENABLE_REMOTE_CONTROL`: Must be enabled in both `main.ts` and `app/features/conference/components/Conference.tsx`
 - `config.defaultServerURL`: Default Jitsi Meet server (meet.jit.si)
 - `config.appProtocolPrefix`: Protocol scheme (jitsi-meet)
 - `config.defaultServerTimeout`: Loading timeout in seconds (30)
@@ -205,16 +221,16 @@ Documented in README.md Publishing section:
 ## Common Patterns
 
 ### Adding a New Setting
-1. Add action types in `app/features/settings/actionTypes.js`
-2. Create actions in `app/features/settings/actions.js`
-3. Update reducer in `app/features/settings/reducer.js`
+1. Add action types in `app/features/settings/actionTypes.ts`
+2. Create actions in `app/features/settings/actions.ts`
+3. Update reducer in `app/features/settings/reducer.ts`
 4. Add UI component in `app/features/settings/components/`
-5. Integrate in `SettingsDrawer.js`
+5. Integrate in `SettingsDrawer.tsx`
 
 ### Adding Translations
 1. Add translation keys to JSON files in `app/i18n/lang/`
-2. Register new language in `app/i18n/index.js`
+2. Register new language in `app/i18n/index.ts`
 3. Update `Comment[lang]` in `package.json` for Linux desktop file
 
 ### Modifying Jitsi Meet Configuration
-Edit `configOverwrite` or `interfaceConfigOverwrite` in `Conference.js:144-154`. These override Jitsi Meet's default config when loading the iframe.
+Edit `configOverwrite` or `interfaceConfigOverwrite` in `Conference.tsx`. These override Jitsi Meet's default config when loading the iframe.
