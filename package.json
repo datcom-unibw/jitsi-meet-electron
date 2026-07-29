@@ -1,6 +1,6 @@
 {
   "name": "ansi-meet-electron",
-  "version": "2026.1.100",
+  "version": "2026.7.100",
   "description": "Electron application for Jitsi Meet, branded by AnSi",
   "main": "./build/main.js",
   "productName": "AnSi Meet",
