@@ -49,5 +49,13 @@ export default {
     /**
      * The URL of the german DatCom Meet help.
      */
-    deHelpURL: 'https://meet.datcom-unibw.de/datcom_jitsi-meet_nutzeranleitung.pdf'
+    deHelpURL: 'https://meet.datcom-unibw.de/datcom_jitsi-meet_nutzeranleitung.pdf',
+
+    /**
+     * OIDC provider URL (Keycloak). Popups matching this URL prefix are opened
+     * inside Electron (not the system browser) so that the SSO redirect flow
+     * (sso.html postMessage) works. Empty -> no OIDC popup handling (default:
+     * all unknown popups go to the system browser).
+     */
+    oidcProviderURL: 'https://auth.unibw.de'
 };

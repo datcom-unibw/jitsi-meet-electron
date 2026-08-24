@@ -543,6 +543,14 @@ ipcMain.on('open-meeting-window', (event, conference) => {
     const windowOpenHandler = ({ url, frameName }: { frameName: string; url: string; }) => {
         const target = getPopupTarget(url, frameName);
 
+        // OIDC: open the provider's auth pages in an Electron popup (not the
+        // system browser) so that sso.html can postMessage the token back to
+        // the Jitsi frontend via window.opener. Without this, Keycloak opens in
+        // the system browser and the user does not return to the app.
+        if (!target && config.oidcProviderURL && url.startsWith(config.oidcProviderURL)) {
+            return { action: 'allow' };
+        }
+
         if (!target || target === 'browser') {
             openExternalLink(url);
 
