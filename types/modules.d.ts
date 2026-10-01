@@ -25,19 +25,32 @@ declare module '*.css' {
     export default content;
 }
 
-declare module '@jitsi/electron-sdk' {
+declare module '@jitsi/electron-sdk/main' {
     export function initPopupsConfigurationMain(window: any, windowOpenHandler?: any): void;
     export function getPopupTarget(url: string, frameName: string): string | undefined;
     export function setupPictureInPictureMain(window: any): void;
-    export function setupRemoteControlMain(window: any): void;
+    export function setupRemoteControlMain(window: any, options?: {
+        // Asks the user whether a remote control session may start. Must resolve
+        // to true only on explicit consent; defaults to the SDK's own native
+        // dialog when omitted. `false` disables the gate entirely, which is only
+        // safe when a start request cannot come from untrusted web content.
+        requestConsent?: false | ((details: { sourceId: string; }) => Promise<boolean> | boolean);
+    }): void;
     export function setupPowerMonitorMain(window: any): void;
     export function setupScreenSharingMain(window: any, appName: string, appId: string): void;
+}
 
+declare module '@jitsi/electron-sdk/renderer' {
     export function initPopupsConfigurationRender(api: any): void;
     export function setupScreenSharingRender(api: any): void;
     export function setupPictureInPictureRender(api: any): void;
     export function setupRemoteControlRender(api: any): void;
     export function setupPowerMonitorRender(api: any): void;
+}
+
+declare module '@jitsi/electron-sdk/preload' {
+    // Exposes the SDK bridge on the main world; call once from the preload.
+    export function install(): void;
 }
 
 declare module '@jitsi/js-utils/random' {

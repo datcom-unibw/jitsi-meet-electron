@@ -201,7 +201,7 @@ class Welcome extends Component<IProps, IWelcomeState> {
         }
 
         this.props.dispatch(addRecentListEntry(conference));
-        window.jitsiNodeAPI.ipc.send('open-meeting-window', conference);
+        window.jitsiElectronApp.ipc.send('open-meeting-window', conference);
     }
 
 

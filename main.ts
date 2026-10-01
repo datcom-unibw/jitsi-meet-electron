@@ -5,11 +5,12 @@ import {
     setupPowerMonitorMain,
     setupRemoteControlMain,
     setupScreenSharingMain
-} from '@jitsi/electron-sdk';
+} from '@jitsi/electron-sdk/main';
 import {
     BrowserWindow,
     Menu,
     app,
+    dialog,
     ipcMain
 } from 'electron';
 import contextMenu from 'electron-context-menu';
@@ -24,6 +25,7 @@ import * as URL from 'url';
 
 import config from './app/features/config';
 import { openExternalLink } from './app/features/utils/openExternalLink';
+import { t } from './app/i18n/main';
 import pkgJson from './package.json';
 
 // This file is bundled to ./build/main.js, so under esbuild __dirname is the
@@ -35,9 +37,25 @@ const rootDir = path.resolve(__dirname, '..');
 
 const showDevTools = Boolean(process.env.SHOW_DEV_TOOLS) || (process.argv.indexOf('--show-dev-tools') > -1);
 
-// For enabling remote control, please change the ENABLE_REMOTE_CONTROL flag in
-// app/features/conference/components/Conference.js to true as well
-const ENABLE_REMOTE_CONTROL = false;
+/**
+ * Parse --defaultServer CLI argument (supports both --defaultServer=URL and --defaultServer URL).
+ * In dev mode via `npm start`, arguments passed via `npm start -- --defaultServer` are consumed
+ * by `concurrently` and never reach the Electron process. Use the JITSI_DEFAULT_SERVER
+ * environment variable for dev mode instead (mirrors the SHOW_DEV_TOOLS pattern).
+ * Dev usage: $env:JITSI_DEFAULT_SERVER='https://example.com'; npm start
+ */
+const defaultServerArgIdx = process.argv.findIndex(arg => arg.startsWith('--defaultServer'));
+let defaultServerURL: string | null = process.env.JITSI_DEFAULT_SERVER || null;
+
+if (defaultServerArgIdx > -1) {
+    const arg = process.argv[defaultServerArgIdx];
+
+    if (arg.includes('=')) {
+        defaultServerURL = arg.split('=')[1] || null;
+    } else if (process.argv[defaultServerArgIdx + 1] && !process.argv[defaultServerArgIdx + 1].startsWith('--')) {
+        defaultServerURL = process.argv[defaultServerArgIdx + 1];
+    }
+}
 
 // Fix screen-sharing thumbnails being missing sometimes.
 // https://github.com/electron/electron/issues/44504
@@ -228,10 +246,10 @@ function createJitsiMeetWindow() {
         show: false,
         webPreferences: {
             enableBlinkFeatures: 'WebAssemblyCSP',
-            contextIsolation: false,
+            contextIsolation: true,
             nodeIntegration: false,
             preload: path.resolve(basePath, './build/preload.js'),
-            sandbox: false
+            sandbox: true
         }
     };
 
@@ -495,7 +513,9 @@ ipcMain.on('renderer-ready', event => {
                 .send('protocol-data-msg', protocolDataForFrontApp);
         }
 
-
+        if (defaultServerURL) {
+            mainWindow.webContents.send('set-default-server', defaultServerURL);
+        }
     }
 
     // Meeting window is ready.
@@ -519,6 +539,36 @@ ipcMain.on('restore-meeting-window', () => {
         meetingWindow.focus();
     }
 });
+
+/**
+ * Asks the user whether a remote control session may start.
+ *
+ * The request that gets here reaches the meeting window as a postMessage from
+ * the conference iframe, so it carries no identity that can be trusted: any page
+ * loaded in that iframe can send it, and Jitsi Meet's own in-page consent UI
+ * runs inside exactly the frame an attacker controls. The prompt is therefore a
+ * native, modal dialog owned by the main process — web content can neither
+ * render, click nor dismiss it — and nothing is executed until the user allows
+ * it here.
+ *
+ * @returns {Promise<boolean>} Whether the user allowed the session.
+ */
+async function requestRemoteControlConsent(): Promise<boolean> {
+    if (!meetingWindow) {
+        return false;
+    }
+
+    const { response } = await dialog.showMessageBox(meetingWindow, {
+        type: 'warning',
+        buttons: [ t('remoteControl.deny'), t('remoteControl.allow') ],
+        defaultId: 0,
+        cancelId: 0,
+        message: t('remoteControl.message'),
+        detail: t('remoteControl.detail')
+    });
+
+    return response === 1;
+}
 
 /**
  * Open the meeting in Window 2.
@@ -574,10 +624,10 @@ ipcMain.on('open-meeting-window', (event, conference) => {
         show: false,
         webPreferences: {
             enableBlinkFeatures: 'WebAssemblyCSP',
-            contextIsolation: false,
+            contextIsolation: true,
             nodeIntegration: false,
             preload: path.resolve(basePath, './build/preload.js'),
-            sandbox: false
+            sandbox: true
         }
     });
 
@@ -592,9 +642,7 @@ ipcMain.on('open-meeting-window', (event, conference) => {
     setupPictureInPictureMain(meetingWindow);
     setupPowerMonitorMain(meetingWindow);
     setupScreenSharingMain(meetingWindow, config.appName, pkgJson.build.appId);
-    if (ENABLE_REMOTE_CONTROL) {
-        setupRemoteControlMain(meetingWindow);
-    }
+    setupRemoteControlMain(meetingWindow, { requestConsent: requestRemoteControlConsent });
 
     // Block redirects — same protection as the launcher window.
     meetingWindow.webContents.addListener('will-redirect', (ev, url) => {

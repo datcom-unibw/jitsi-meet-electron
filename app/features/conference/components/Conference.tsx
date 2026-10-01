@@ -1,4 +1,11 @@
 
+import {
+    initPopupsConfigurationRender,
+    setupPictureInPictureRender,
+    setupPowerMonitorRender,
+    setupRemoteControlRender,
+    setupScreenSharingRender
+} from '@jitsi/electron-sdk/renderer';
 import React, { Component } from 'react';
 import { connect } from 'react-redux';
 import { Dispatch } from 'redux';
@@ -12,10 +19,6 @@ import { parseURLParams } from '../../utils/parseURLParams';
 import { conferenceEnded, conferenceJoined } from '../actions';
 import JitsiMeetExternalAPI from '../external_api';
 import { LoadingIndicator, Wrapper } from '../styled';
-
-// For enabling remote control, please change ENABLE_REMOTE_CONTROL flag in
-// main.js to true as well
-const ENABLE_REMOTE_CONTROL = false;
 
 interface IProps {
     _alwaysOnTopWindowEnabled?: boolean;
@@ -142,9 +145,10 @@ class Conference extends Component<IProps, IConferenceState> {
         const searchParameters = Object.fromEntries(url.searchParams);
         const hashParameters = parseURLParams(url);
 
+        const { jwt: jwtFromSearch, ...restSearchParameters } = searchParameters;
         const locale = { lng: i18n.language };
         const urlParameters = {
-            ...searchParameters,
+            ...restSearchParameters,
             ...locale
         };
 
@@ -160,7 +164,7 @@ class Conference extends Component<IProps, IConferenceState> {
         const interfaceConfigOverwrite = {
             SHOW_CHROME_EXTENSION_BANNER: false
         };
-        let jwt;
+        let jwt = jwtFromSearch;
 
         Object.entries(hashParameters).forEach(([ key, value ]) => {
             if (key.startsWith('config.')) {
@@ -194,7 +198,7 @@ class Conference extends Component<IProps, IConferenceState> {
         this._api.on('suspendDetected', this._onVideoConferenceEnded);
         this._api.on('readyToClose', this._onVideoConferenceEnded);
         this._api.on('pipLeft', () => {
-            window.jitsiNodeAPI.ipc.send('restore-meeting-window');
+            window.jitsiElectronApp.ipc.send('restore-meeting-window');
         });
         this._api.on('videoConferenceJoined',
             () => {
@@ -202,11 +206,16 @@ class Conference extends Component<IProps, IConferenceState> {
             }
         );
 
-        // Setup Jitsi Meet Electron SDK on this renderer.
-        window.jitsiNodeAPI.setupRenderer(this._api, {
-            enableRemoteControl: ENABLE_REMOTE_CONTROL,
-            enableAlwaysOnTopWindow: this.props._alwaysOnTopWindowEnabled
-        });
+        // Setup Jitsi Meet Electron SDK on this renderer. These run in the page
+        // ("main world") next to the iframe API and reach the main process only
+        // through the window.jitsiElectronSDK bridge installed by the SDK preload.
+        initPopupsConfigurationRender(this._api);
+        setupScreenSharingRender(this._api);
+        setupRemoteControlRender(this._api);
+        if (this.props._alwaysOnTopWindowEnabled) {
+            setupPictureInPictureRender(this._api);
+        }
+        setupPowerMonitorRender(this._api);
     }
 
     /**
@@ -232,7 +241,7 @@ class Conference extends Component<IProps, IConferenceState> {
      */
     _onVideoConferenceEnded() {
         this.props.dispatch(conferenceEnded(this._conference));
-        window.jitsiNodeAPI.ipc.send('close-meeting-window');
+        window.jitsiElectronApp.ipc.send('close-meeting-window');
     }
 
 
