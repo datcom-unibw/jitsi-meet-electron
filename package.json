@@ -137,10 +137,9 @@
     "webrtc",
     "xmpp",
     "electron",
-    "ansi-meet",
-    "datcom-meet"
+    "ansi-meet"
   ],
-  "author": "AnSi <feedback@datcom-unibw.de>",
+  "author": "AnSi <admin@ansi.inf.unibw.de>",
   "readmeFilename": "README.md",
   "license": "Apache-2.0",
   "dependencies": {

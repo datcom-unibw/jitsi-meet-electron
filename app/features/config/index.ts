@@ -24,7 +24,7 @@ export default {
     /**
      * The default server URL of Jitsi Meet Deployment that will be used.
      */
-    defaultServerURL: 'https://meet.datcom-unibw.de',
+    defaultServerURL: 'https://jm.ansi.inf.unibw.de',
 
     /**
      * The default server Timeout in seconds.
@@ -34,22 +34,22 @@ export default {
     /**
      * URL to send feedback.
      */
-    feedbackURL: 'mailto:feedback@datcom-unibw.de',
+    feedbackURL: 'mailto:admin@ansi.inf.unibw.de',
 
     /**
      * The URL of Privacy Policy Page.
      */
-    privacyPolicyURL: 'https://meet.datcom-unibw.de/privacy.html',
+    privacyPolicyURL: 'https://jm.ansi.inf.unibw.de/privacy.html',
 
     /**
      * The URL of Terms and Conditions Page.
      */
-    termsAndConditionsURL: 'https://meet.datcom-unibw.de/terms.html',
+    termsAndConditionsURL: 'https://jm.ansi.inf.unibw.de/terms.html',
 
     /**
-     * The URL of the german DatCom Meet help.
+     * The URL of the german AnSi Meet help.
      */
-    deHelpURL: 'https://meet.datcom-unibw.de/datcom_jitsi-meet_nutzeranleitung.pdf',
+    deHelpURL: 'https://jm.ansi.inf.unibw.de/ansi_jitsi-meet_nutzeranleitung.pdf',
 
     /**
      * OIDC provider URL (Keycloak). Popups matching this URL prefix are opened
